@@ -5,6 +5,7 @@ from ..utilities import (
     sxs_id_and_version, lev_number, sxs_path_to_system_path,
     download_file, sxs_directory, read_config
 )
+from sxscatalog.metadata.metadata import _backwards_compatibility
 
 
 def search_prefixes(file, sxs_id_stem, lev, files, ending=""):
@@ -520,7 +521,9 @@ class SimulationBase:
         metadata_location = self.files.get(metadata_path)["link"]
         sxs_id_path = Path(self.sxs_id)
         metadata_truepath = Path(sxs_path_to_system_path(sxs_id_path / metadata_path))
-        return Metadata(load(metadata_location, truepath=metadata_truepath))
+        return _backwards_compatibility(
+            Metadata(load(metadata_location, truepath=metadata_truepath))
+            .add_standard_parameters())
 
     def load_horizons(self):
         from .. import load
